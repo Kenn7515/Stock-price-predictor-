@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Stock Predictor</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: white;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .left { flex: 2; }
+        .right { flex: 1; }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        button {
+            background: #00c6ff;
+            cursor: pointer;
+        }
+
+        .stock-item {
+            padding: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+        }
+
+        .stock-item:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        canvas {
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="left">
+
+        <div class="card">
+            <h2>📈 Stock Predictor</h2>
+
+            <form method="POST">
+                <input name="stock" placeholder="Enter stock" required>
+                <input name="days" type="number" placeholder="Days" required>
+                <button type="submit">Predict</button>
+            </form>
+        </div>
+
+        {% if prediction and prediction|length > 0 %}
+        <div class="card">
+
+            <h3>Predictions</h3>
+
+            {% for p in prediction %}
+                <div>Day {{ loop.index }} → ₹ {{ p }}</div>
+            {% endfor %}
+
+            <!-- DATA HOLDER -->
+            <div id="chart-data" data-values='{{ prediction | tojson }}'></div>
+
+            <canvas id="chart"></canvas>
+
+        </div>
+        {% endif %}
+
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+        <div class="card">
+            <h3>Available Stocks</h3>
+
+            {% for s in stocks %}
+                <div class="stock-item" onclick="fillStock('{{ s }}')">
+                    {{ s }}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+function fillStock(stockName) {
+    document.querySelector('input[name="stock"]').value = stockName;
+}
+
+const dataElement = document.getElementById("chart-data");
+
+if (dataElement) {
+    const data = JSON.parse(dataElement.dataset.values);
+    const labels = data.map((_, i) => "Day " + (i + 1));
+
+    new Chart(document.getElementById("chart"), {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Predicted Price",
+                data: data,
+                borderWidth: 2,
+                tension: 0.3
+            }]
+        }
+    });
+}
+</script>
+
+</body>
+</html>
