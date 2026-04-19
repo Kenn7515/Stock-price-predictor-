@@ -3,6 +3,10 @@
 A web-based stock price prediction application built using Flask and machine learning models.  
 This app allows users to forecast future stock prices and visualize predictions using an interactive dashboard.
 
+## 🌐 Live Demo
+
+https://stock-price-predictor-izwp.onrender.com
+
 ---
 
 ## 🚀 Features
